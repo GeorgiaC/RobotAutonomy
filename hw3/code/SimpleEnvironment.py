@@ -2,11 +2,6 @@ import numpy as np
 from numpy import linalg as LA
 import pylab as pl
 from DiscreteEnvironment import DiscreteEnvironment
-# import pdb
-
-# import argparse, numpy, openravepy, time
-# from HerbRobot import HerbRobot
-# from SimpleRobot import SimpleRobot
 
 
 class SimpleEnvironment(object):
@@ -36,18 +31,31 @@ class SimpleEnvironment(object):
         #  and return a list of node_ids that represent the neighboring
         #  nodes
 
+        #get grid coordinates from node_id
         x, y = self.discrete_env.NodeIdToGridCoord(node_id)
 
-        # pdb.set_trace()
+        #Check that grid coordinates are within boundries
         xlim, ylim = self.discrete_env.num_cells
 
         if (node_id < 0 or node_id > xlim*ylim-1):
             return None
         
+        #If neighboing node is withing bounds, add to successors
         temp = [[x-1, y], [x+1, y], [x, y-1], [x, y+1]]
         for s in temp:
+                #Check that robot is within the environment
+            
             if s[0] >= 0 and s[0] < xlim and s[1] >= 0 and s[1] < ylim:
-                successors.append(self.discrete_env.GridCoordToNodeId(s))
+                #Collision checking: Update robot transform
+                x, y = self.discrete_env.GridCoordToConfiguration([s[0], s[1]])
+                transform = np.array([[1, 0, 0, x],
+                                      [0, 1, 0, y],
+                                      [0, 0, 1, 0],
+                                      [0, 0, 0, 1]])
+                self.robot.SetTransform(transform)
+                #Collision checking: Check collisions
+                if self.robot.GetEnv().CheckCollision(self.robot) == False:
+                    successors.append(self.discrete_env.GridCoordToNodeId(s))
 
         return successors
 

@@ -72,7 +72,7 @@ class DiscreteEnvironment(object):
             n = int((self.upper_limits[i]-self.lower_limits[i])/self.resolution)+1
             lspace.append(np.linspace(self.lower_limits[i], self.upper_limits[i], num = n))
 
-            config[i] = (lspace[i][coord[i]] + lspace[i][coord[i]+1])/2
+            config[i] = (lspace[i][coord[i]] + lspace[i][coord[i]-1])/2
 
         return config
 

@@ -36,6 +36,7 @@ class BreadthFirstPlanner(object):
         while Q :
 
             # print Q
+            #take first node in list
             next_node = Q.popleft()
 
             if next_node == goal_id:
@@ -50,6 +51,8 @@ class BreadthFirstPlanner(object):
                     #Mark visited node with it's index
                     idx += 1
                     visit[id] = idx
+                    # #set resolution to 1 to view grid
+                    # print np.reshape(visit, (10, 10))
                     #add new nodes to queue
                     Q.append(id) 
 
@@ -90,21 +93,3 @@ class BreadthFirstPlanner(object):
 
         print plan
         return plan
-
-
-
-    # def path(self, state, dict):
-    #     action_list = []
-    #     state_list = []
-
-    #     while True:
-    #         row = dict[state]
-    #         if len(row) == 2:
-    #             state = row[0]
-    #             action = row[1]
-    #             action_list.append(action)
-    #             state_list.append(state)
-    #         else:
-    #             break
-
-    #     return state_list.reverse()

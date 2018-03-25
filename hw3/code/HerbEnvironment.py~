@@ -13,16 +13,15 @@ class HerbEnvironment(object):
         self.robot = herb.robot
         self.lower_limits, self.upper_limits = self.robot.GetActiveDOFLimits()
         self.discrete_env = DiscreteEnvironment(resolution, self.lower_limits, self.upper_limits)
-        self.resolution = resolution
+	self.resolution = resolution
 
         # account for the fact that snapping to the middle of the grid cell may put us over our
         #  upper limit
         self.upper_coord = [x - 1 for x in self.discrete_env.num_cells]
 
-        print self.upper_limits
-        print self.lower_limits
-        print self.resolution 
-        print self.discrete_env.num_cells
+        print self.upper_coord
+        print self.lower_coord
+	print self.resolution 
 
 
         self.upper_config = self.discrete_env.GridCoordToConfiguration(self.upper_coord)

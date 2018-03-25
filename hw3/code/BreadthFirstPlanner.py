@@ -11,7 +11,10 @@ class BreadthFirstPlanner(object):
         
 
         plan = []
-        self.planning_env.InitializePlot(goal_config)
+        try:
+            self.planning_env.InitializePlot(goal_config)
+        except:
+            print 'cant plot'
 
         # TODO: Here you will implement the breadth first planner
         #  The return path should be a numpy array
@@ -59,7 +62,10 @@ class BreadthFirstPlanner(object):
                     #plot edges
                     node_coord = self.planning_env.discrete_env.NodeIdToConfiguration(next_node)
                     id_coord = self.planning_env.discrete_env.NodeIdToConfiguration(id)
-                    self.planning_env.PlotEdge(node_coord, id_coord)
+                    try: 
+                        self.planning_env.PlotEdge(node_coord, id_coord)
+                    except:
+                        print 'cant plot'
 
 
         #Initialize plan

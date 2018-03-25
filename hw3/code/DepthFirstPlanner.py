@@ -106,4 +106,3 @@ class DepthFirstPlanner(object):
         print plan
         return plan
 
-        return plan

@@ -1,5 +1,6 @@
 import numpy as np
 from collections import deque
+import pdb
 
 class DepthFirstPlanner(object):
     
@@ -19,7 +20,10 @@ class DepthFirstPlanner(object):
 
         
         plan = []
-        self.planning_env.InitializePlot(goal_config)
+        try: 
+            self.planning_env.InitializePlot(goal_config)
+        except:
+            print 'cant plot'
 
         # TODO: Here you will implement the breadth first planner
         #  The return path should be a numpy array
@@ -36,10 +40,12 @@ class DepthFirstPlanner(object):
         Q = deque([root_id]) #queue of nodes to expand
 
         # #create an array of nodes and give visited nodes their idx
-        width = self.planning_env.discrete_env.num_cells[0]
-        height = self.planning_env.discrete_env.num_cells[1]
-        visit = np.zeros(width*height)
+        limits = self.planning_env.discrete_env.num_cells
+        total = np.prod(np.asarray(limits))
+        visit = np.zeros(int(total))
         visit[root_id] = 1
+
+
         self.nodes[start_id] = {}
 
         arrived = 0
@@ -52,8 +58,12 @@ class DepthFirstPlanner(object):
 
 
             successors = self.planning_env.GetSuccessors(next_node)
-            # print successors
-            for id in successors:
+            # successors_id = [self.planning_env.discrete_env.GridCoordToNodeId(c) for c in successors]
+
+            # pdb.set_trace()
+            for id in successors:  # successor is expecting id
+
+
                 if visit[id] == 0:
                     # print id
 
@@ -69,7 +79,11 @@ class DepthFirstPlanner(object):
                     #plot edges
                     node_coord = self.planning_env.discrete_env.NodeIdToConfiguration(next_node)
                     id_coord = self.planning_env.discrete_env.NodeIdToConfiguration(id)
-                    self.planning_env.PlotEdge(node_coord, id_coord)
+
+                    try:
+                        self.planning_env.PlotEdge(node_coord, id_coord)
+                    except:
+                        print 'cant plot'
 
                     if id == goal_id:
                         arrived = 1

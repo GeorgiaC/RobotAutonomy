@@ -1,6 +1,7 @@
 import numpy as np
 from DiscreteEnvironment import DiscreteEnvironment
 import pdb
+from numpy import linalg as LA
 
 import argparse, numpy, openravepy, time
 from HerbRobot import HerbRobot
@@ -83,7 +84,7 @@ class HerbEnvironment(object):
                 flag = False
 
             if flag == True:
-                successors.append(coord)
+                successors.append(self.discrete_env.GridCoordToNodeId(coord))
 
         # pdb.set_trace()
 

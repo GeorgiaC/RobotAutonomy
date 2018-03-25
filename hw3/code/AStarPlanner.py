@@ -42,6 +42,8 @@ class AStarPlanner(object):
         # get dimension of environment 
         lims = self.planning_env.discrete_env.num_cells
 
+
+
         # total number of stats by multiplying all dimensions
         total = int(np.prod(lims))
 
@@ -105,7 +107,7 @@ class AStarPlanner(object):
                 self.g_scores[n] = temp_gscore
                 self.f_scores[n] = self.g_scores[n] + self.planning_env.ComputeHeuristicCost(n, goal_id)
 
-        return 'fuck'  
+        return 'aiya'  
 
     def path(self, came_from, current):  # current is an id
 

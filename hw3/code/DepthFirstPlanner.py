@@ -20,10 +20,10 @@ class DepthFirstPlanner(object):
 
         
         plan = []
-        try: 
-            self.planning_env.InitializePlot(goal_config)
-        except:
-            print 'cant plot'
+        # try: 
+        #     self.planning_env.InitializePlot(goal_config)
+        # except:
+        #     print 'cant plot'
 
         # TODO: Here you will implement the breadth first planner
         #  The return path should be a numpy array
@@ -80,10 +80,10 @@ class DepthFirstPlanner(object):
                     node_coord = self.planning_env.discrete_env.NodeIdToConfiguration(next_node)
                     id_coord = self.planning_env.discrete_env.NodeIdToConfiguration(id)
 
-                    try:
-                        self.planning_env.PlotEdge(node_coord, id_coord)
-                    except:
-                        print 'cant plot'
+                    # try:
+                    #     self.planning_env.PlotEdge(node_coord, id_coord)
+                    # except:
+                    #     print 'cant plot'
 
                     if id == goal_id:
                         arrived = 1
@@ -118,6 +118,4 @@ class DepthFirstPlanner(object):
         plan = np.vstack((start_config, plan))
 
         print plan
-        return plan
-
         return plan

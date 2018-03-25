@@ -34,10 +34,10 @@ class AStarPlanner(object):
         #  of dimension k x n where k is the number of waypoints
         #  and n is the dimension of the robots configuration space
 
-        try: 
-            self.planning_env.InitializePlot(goal_config)
-        except:
-            print 'cant plot'
+        # try: 
+        #     self.planning_env.InitializePlot(goal_config)
+        # except:
+        #     print 'cant plot'
 
         # get dimension of environment 
         lims = self.planning_env.discrete_env.num_cells
@@ -91,10 +91,10 @@ class AStarPlanner(object):
                     current_config = self.planning_env.discrete_env.NodeIdToConfiguration(current)
                     neighor_config = self.planning_env.discrete_env.NodeIdToConfiguration(n)
 
-                    try: 
-                        self.planning_env.PlotEdge(current_config, neighor_config)
-                    except:
-                        print 'cant plot'
+                    # try: 
+                    #     self.planning_env.PlotEdge(current_config, neighor_config)
+                    # except:
+                    #     print 'cant plot'
 
                 temp_gscore = self.g_scores[current] + \
                               self.planning_env.ComputeDistance(current, n)

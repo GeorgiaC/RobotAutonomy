@@ -78,13 +78,21 @@ class HerbEnvironment(object):
                 if number < 0 or number >= limits[i]:  # must be one less due to indexing
                     flag = False
 
-            self.robot.SetActiveDOFValues(coord)
-            if (self.robot.GetEnv().CheckCollision(self.robot) == True and \
-                self.robot.CheckSelfCollision()==True):
-                flag = False
 
-            if flag == True:
+
+            
+            with self.robot:
+                self.robot.SetActiveDOFValues(self.discrete_env.GridCoordToConfiguration(coord))
+                if (self.robot.GetEnv().CheckCollision(self.robot) or \
+                    self.robot.CheckSelfCollision()):
+                    # print 'collision'
+                    flag = False
+            # pdb.set_trace()
+
+            if flag:
                 successors.append(self.discrete_env.GridCoordToNodeId(coord))
+                # print successors
+
 
         # pdb.set_trace()
 

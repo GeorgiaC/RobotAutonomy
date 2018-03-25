@@ -1,5 +1,5 @@
 import numpy as np
-# import pdb
+import pdb
 
 class DiscreteEnvironment(object):
 
@@ -28,6 +28,18 @@ class DiscreteEnvironment(object):
         # space to a node in discrete space
         #
 
+        # lspace = []
+        # ind = []
+        # node_id = 0
+        # for i in range (0, self.dimension):
+        #     n = int((self.upper_limits[i]-self.lower_limits[i])/self.resolution)+1
+        #     lspace.append(np.linspace(self.lower_limits[i], self.upper_limits[i], num = n))
+        #     ind.append(np.digitize(np.array([config[i]]), lspace[i])[0]-1)
+
+        #     node_id += 10**(self.dimension-1-i)*ind[0]
+
+        # print lspace
+        # return node_id
         temp = self.ConfigurationToGridCoord(config)
         return self.GridCoordToNodeId(temp)
 
@@ -49,6 +61,7 @@ class DiscreteEnvironment(object):
 
         lspace = []
         ind = []
+        coord = [0] * self.dimension
 
         for i in range (0, self.dimension):
             n = int((self.upper_limits[i]-self.lower_limits[i])/self.resolution)+1
@@ -63,33 +76,34 @@ class DiscreteEnvironment(object):
         # This function smaps a grid coordinate in discrete space
         # to a configuration in the full configuration space
         #
-
         config = [0] * self.dimension
         lspace = []
         ind = []
 
         for i in range (0, self.dimension):
             n = int((self.upper_limits[i]-self.lower_limits[i])/self.resolution)+1
+
+            # pdb.set_trace()
             lspace.append(np.linspace(self.lower_limits[i], self.upper_limits[i], num = n))
 
-            config[i] = (lspace[i][coord[i]] + lspace[i][coord[i]+1])/2
+            if coord[i] + 1 < n:
+                config[i] = (lspace[i][coord[i]] + lspace[i][coord[i]+1])/2
+            else:
+                config[i] = lspace[i][coord[i]]
 
         return config
 
     def GridCoordToNodeId(self,coord):
-        
         # TODO:
         # This function maps a grid coordinate to the associated
         # node id 
+        node_id = 0
+        # coord.tolist()
+        coord = map(int, coord)
+        # pdb.set_trace()
+        node_id = np.ravel_multi_index(coord, self.num_cells, order='F')
 
-        num_cells = np.asarray(self.num_cells)
 
-        #create a grid that represents the numbered nodes
-        grid = np.linspace(0, num_cells[0]*num_cells[1]-1, num_cells[0]*num_cells[1])
-        grid = np.reshape(grid, (num_cells[0], num_cells[1]))
-
-        #find the node at the given coordinate
-        node_id = grid[coord[1]][coord[0]]
 
         return node_id
 
@@ -98,19 +112,10 @@ class DiscreteEnvironment(object):
         # TODO:
         # This function maps a node id to the associated
         # grid coordinate
-
+        coord = [0] * self.dimension
         num_cells = np.asarray(self.num_cells)
 
-        #create a grid that represents the numbered nodes
-        grid = np.linspace(0, num_cells[0]*num_cells[1]-1, num_cells[0]*num_cells[1])
-        grid = np.reshape(grid, (num_cells[0], num_cells[1]))
-
-        #find our position i nthe grid
-        config = np.where(grid==node_id)
-
-        #grid is organized in rows then columns
-        coord = np.append(config[1], config[0])
-        
+        coord = np.unravel_index(np.asarray(node_id).astype(int), num_cells, order='F')
 
         return coord
         

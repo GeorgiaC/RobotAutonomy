@@ -11,7 +11,7 @@ class BreadthFirstPlanner(object):
         
 
         plan = []
-        if self.planning_env.robot == 'simple':
+        if hasattr(self.planning_env, 'InitializePlot'):
             self.planning_env.InitializePlot(goal_config)
 
         # TODO: Here you will implement the breadth first planner
@@ -32,7 +32,6 @@ class BreadthFirstPlanner(object):
         size = 1;
         for axis in range(self.planning_env.discrete_env.dimension):
             size = size*self.planning_env.discrete_env.num_cells[axis]
-            print size
         visit = np.zeros(size)
         visit[root_id] = 1
 
@@ -60,7 +59,7 @@ class BreadthFirstPlanner(object):
                     Q.append(id) 
 
                     #plot edges
-                    if self.planning_env.robot == 'simple':
+                    if hasattr(self.planning_env, 'InitializePlot'):
                         node_coord = self.planning_env.discrete_env.NodeIdToConfiguration(next_node)
                         id_coord = self.planning_env.discrete_env.NodeIdToConfiguration(id)
                         self.planning_env.PlotEdge(node_coord, id_coord)

@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import pdb
+import numpy as np
 
 import argparse, numpy, openravepy, time
 
@@ -23,6 +25,8 @@ def main(robot, planning_env, planner):
         goal_config = numpy.array([3.0, 0.0])
 
     plan = planner.Plan(start_config, goal_config)
+    # pdb.set_trace()
+
     traj = robot.ConvertPlanToTrajectory(plan)
 
     raw_input('Press any key to execute trajectory')

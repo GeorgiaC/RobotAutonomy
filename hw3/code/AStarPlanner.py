@@ -45,15 +45,15 @@ class AStarPlanner(object):
 
 
         # total number of stats by multiplying all dimensions
-        total = int(np.prod(lims))
+        # total = int(np.prod(lims))
 
         goal_id = self.planning_env.discrete_env.ConfigurationToNodeId(goal_config)
         start_id = self.planning_env.discrete_env.ConfigurationToNodeId(start_config)
 
         # dictionary init, probably not the best way
-        for i in range (0, total):
-            self.g_scores[i] = 1000
-            self.f_scores[i] = 1000
+        # for i in range (0, total):
+        #     self.g_scores[i] = 1000
+        #     self.f_scores[i] = 1000
 
         self.f_scores[start_id] = self.planning_env.ComputeHeuristicCost(start_id, goal_id)  # takes in id
         self.g_scores[start_id] = 0
@@ -65,6 +65,12 @@ class AStarPlanner(object):
             # find the index with the lowest f_Score in open_set
             min = 1000
             for elem in self.open_set:
+
+                try:
+                    self.f_scores[elem]
+                except: 
+                    self.f_scores[elem] = 1000
+
                 if self.f_scores[elem] <= min:
                     current = elem
                     min = self.f_scores[elem]
@@ -91,15 +97,15 @@ class AStarPlanner(object):
                     current_config = self.planning_env.discrete_env.NodeIdToConfiguration(current)
                     neighor_config = self.planning_env.discrete_env.NodeIdToConfiguration(n)
 
-                    # try: 
-                    #     self.planning_env.PlotEdge(current_config, neighor_config)
-                    # except:
-                    #     print 'cant plot'
-
                 temp_gscore = self.g_scores[current] + \
                               self.planning_env.ComputeDistance(current, n)
 
                 # disregard a more costly path
+                try:
+                    self.g_scores[n]
+                except:
+                    self.g_scores[n] = 1000
+
                 if temp_gscore >= self.g_scores[n]:
                     continue
 

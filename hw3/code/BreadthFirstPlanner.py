@@ -69,8 +69,8 @@ class BreadthFirstPlanner(object):
         plan = goal_config
         prev_node = goal_id
 
-        best_idx = 10000
-        prev_visit = 10000
+        best_idx = 10000000
+        prev_visit = 10000000
 
         while True:
 

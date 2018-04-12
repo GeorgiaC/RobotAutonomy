@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import pdb
+import numpy as np
 
 import argparse, numpy, openravepy, time
 
@@ -18,11 +20,13 @@ def main(robot, planning_env, planner):
 
     start_config = numpy.array(robot.GetCurrentConfiguration())
     if robot.name == 'herb':
-        goal_config = numpy.array([ 4.6, -1.76, 0.00, 1.96, -1.15, 0.87, -1.43] )
+        goal_config = numpy.array([ 4.6, -1.76, 0.00, 1.96, -1.15, 0.87, -1.43])
     else:
         goal_config = numpy.array([3.0, 0.0])
 
     plan = planner.Plan(start_config, goal_config)
+    # pdb.set_trace()
+
     traj = robot.ConvertPlanToTrajectory(plan)
 
     raw_input('Press any key to execute trajectory')
@@ -38,7 +42,7 @@ if __name__ == "__main__":
                         help='The planner to run (astar, bfs, dfs or hrrt)')
     parser.add_argument('-v', '--visualize', action='store_true',
                         help='Enable visualization of tree growth (only applicable for simple robot)')
-    parser.add_argument('--resolution', type=float, default=0.1,
+    parser.add_argument('--resolution', type=float, default=.1,
                         help='Set the resolution of the grid (default: 0.1)')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Enable debug logging')

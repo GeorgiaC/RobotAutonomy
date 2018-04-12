@@ -12,7 +12,6 @@ class SimpleEnvironment(object):
         self.upper_limits = [5., 5.]
         self.discrete_env = DiscreteEnvironment(resolution, self.lower_limits, self.upper_limits)
 
-
         # add an obstacle
         table = self.robot.GetEnv().ReadKinBodyXMLFile('models/objects/table.kinbody.xml')
         self.robot.GetEnv().Add(table)
@@ -59,8 +58,6 @@ class SimpleEnvironment(object):
                     successors.append(self.discrete_env.GridCoordToNodeId(s))
 
         return successors
-
-
 
     def ComputeDistance(self, start_id, end_id):
 

@@ -11,10 +11,8 @@ class BreadthFirstPlanner(object):
         
 
         plan = []
-        try:
+        if hasattr(self.planning_env, 'InitializePlot'):
             self.planning_env.InitializePlot(goal_config)
-        except:
-            print 'cant plot'
 
         # TODO: Here you will implement the breadth first planner
         #  The return path should be a numpy array
@@ -31,9 +29,10 @@ class BreadthFirstPlanner(object):
         Q = deque([root_id]) #queue of nodes to expand
 
         #create an array of nodes and give visited nodes their idx
-        width = self.planning_env.discrete_env.num_cells[0]
-        height = self.planning_env.discrete_env.num_cells[1]
-        visit = np.zeros(width*height)
+        size = 1;
+        for axis in range(self.planning_env.discrete_env.dimension):
+            size = size*self.planning_env.discrete_env.num_cells[axis]
+        visit = np.zeros(size)
         visit[root_id] = 1
 
         while Q :
@@ -60,12 +59,10 @@ class BreadthFirstPlanner(object):
                     Q.append(id) 
 
                     #plot edges
-                    node_coord = self.planning_env.discrete_env.NodeIdToConfiguration(next_node)
-                    id_coord = self.planning_env.discrete_env.NodeIdToConfiguration(id)
-                    try: 
+                    if hasattr(self.planning_env, 'InitializePlot'):
+                        node_coord = self.planning_env.discrete_env.NodeIdToConfiguration(next_node)
+                        id_coord = self.planning_env.discrete_env.NodeIdToConfiguration(id)
                         self.planning_env.PlotEdge(node_coord, id_coord)
-                    except:
-                        print 'cant plot'
 
 
         #Initialize plan

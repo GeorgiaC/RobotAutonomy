@@ -1,5 +1,4 @@
 import numpy, openravepy
-import pdb
 
 class SimpleRobot(object):
 
@@ -36,7 +35,6 @@ class SimpleRobot(object):
 
         idx = 0
         for pt in plan:
-            # pdb.set_trace()
             traj.Insert(idx, pt)
             idx = idx + 1
         return traj

@@ -6,6 +6,8 @@ import pdb
 import HerbRobot as herb
 import SimpleRobot as SR
 
+from numpy import linalg as LA
+
 class Control(object):
     def __init__(self, omega_left, omega_right, duration):
         self.ul = omega_left
@@ -89,8 +91,8 @@ class SimpleEnvironment(object):
     def ConstructActions(self):
         L = 0.5
         r = 0.2
-        w_wheel = 0.5  # for now, the magnitude
-        dt = 0.5
+        w_wheel = 1  # for now, the magnitude
+        dt = 4
 
         # Actions is a dictionary that maps orientation of the robot to
         # an action set
@@ -125,6 +127,7 @@ class SimpleEnvironment(object):
             # turn 90 degrees
             angle_90 = np.pi/2
             delta_t = angle_90*L/(2*r*w_wheel)
+            wee = angle_90*L/(2*r*dt)
 
             # to the left
             control_90l = Control(-w_wheel, w_wheel, delta_t)
@@ -139,9 +142,6 @@ class SimpleEnvironment(object):
             self.actions[idx].append(action_90r)
 
 
-        pdb.set_trace()
-         
-
     def GetSuccessors(self, node_id):
 
         successors = []
@@ -153,7 +153,7 @@ class SimpleEnvironment(object):
 
         # just check collision???
         config = self.discrete_env.NodeIdToConfiguration(node_id)
-        coord = self.discrete_env.NodeIdToCoord(node_id)
+        coord = self.discrete_env.NodeIdToGridCoord(node_id)
         coord_angle = coord[2]
 
         x_min = self.boundary_limits[0][0]
@@ -165,7 +165,9 @@ class SimpleEnvironment(object):
         for action in self.actions[coord_angle]:
 
             # check current config + the transfrom from the list of actions
-            curr_config = config + np.asarray(self.actions[coord_angle][i].footprint[-1])
+            curr_config = config + np.asarray(action.footprint[-1])
+            print curr_config
+            curr_id = self.discrete_env.ConfigurationToNodeId(curr_config)
             
             bounds_error = False
 
@@ -174,13 +176,15 @@ class SimpleEnvironment(object):
                 curr_config[1] < y_min or curr_config[1] > y_max):
                 bounds_error = True
 
+            # might have to check collision on everything in the footprint file ... FUCK
+
             # check collision
             x, y = curr_config[0:2]
             collision = self.check_collision(x, y)
 
             # if all good
             if (collision == False and bounds_error == False):
-                successors.append(action)
+                successors.append([curr_id, action.control])
 
         return successors
 
@@ -200,6 +204,12 @@ class SimpleEnvironment(object):
         # TODO: Here you will implement a function that 
         # computes the distance between the configurations given
         # by the two node ids
+        start_config = self.discrete_env.NodeIdToConfiguration(start_id)
+        end_config = self.discrete_env.NodeIdToConfiguration(end_id)
+        start_pos = start_config[0:2]
+        end_pos = end_config[0:2]
+
+        dist = LA.norm(start_pos - end_pos)
 
         return dist
 
@@ -210,7 +220,10 @@ class SimpleEnvironment(object):
         # TODO: Here you will implement a function that 
         # computes the heuristic cost between the configurations
         # given by the two node ids
-        
+        start_config = self.discrete_env.NodeIdToConfiguration(start_id)
+        end_config = self.discrete_env.NodeIdToConfiguration(goal_id)
+
+        cost = LA.norm(np.asarray(start_config) - np.asarray(end_config))
         
         return cost
 
@@ -221,3 +234,6 @@ if __name__ == "__main__":
     robot = SR.SimpleRobot(env, PR2robot)
     s = SimpleEnvironment(robot, resolution=np.array([0.05, 0.05, 0.05]))
     s.ConstructActions()
+    l = s.GetSuccessors(100)
+
+    pdb.set_trace()

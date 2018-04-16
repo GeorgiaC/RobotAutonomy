@@ -3,6 +3,7 @@ import heapq
 import pdb
 from collections import OrderedDict
 from sets import Set
+from numpy import linalg as LA
 
 import numpy as np
 
@@ -34,26 +35,16 @@ class AStarPlanner(object):
         #  of dimension k x n where k is the number of waypoints
         #  and n is the dimension of the robots configuration space
 
-        # try: 
-        #     self.planning_env.InitializePlot(goal_config)
-        # except:
-        #     print 'cant plot'
+        try: 
+            self.planning_env.InitializePlot(goal_config)
+        except:
+            print 'cant plot'
 
         # get dimension of environment 
         lims = self.planning_env.discrete_env.num_cells
 
-
-
-        # total number of stats by multiplying all dimensions
-        # total = int(np.prod(lims))
-
         goal_id = self.planning_env.discrete_env.ConfigurationToNodeId(goal_config)
         start_id = self.planning_env.discrete_env.ConfigurationToNodeId(start_config)
-
-        # dictionary init, probably not the best way
-        # for i in range (0, total):
-        #     self.g_scores[i] = 1000
-        #     self.f_scores[i] = 1000
 
         self.f_scores[start_id] = self.planning_env.ComputeHeuristicCost(start_id, goal_id)  # takes in id
         self.g_scores[start_id] = 0
@@ -61,9 +52,8 @@ class AStarPlanner(object):
         self.open_set.add (start_id)
 
         while len(self.open_set) > 0:
-
             # find the index with the lowest f_Score in open_set
-            min = 1000
+            min = 10000
             for elem in self.open_set:
 
                 try:
@@ -76,48 +66,60 @@ class AStarPlanner(object):
                     min = self.f_scores[elem]
 
             if current == goal_id:
+                print 'goal found'
                 return self.path(self.came_from, current)
 
             self.open_set.remove(current) 
             self.closed_set.add(current)
 
+            print 'current: ', current
+            print 'config: ', self.planning_env.discrete_env.NodeIdToConfiguration(current)
+
             neighbors = self.planning_env.GetSuccessors(current)
 
-            for n in neighbors:
+            for n in neighbors:  # iterate through all the action, should be 4 of them,
+
+                # pdb.set_trace()
+                n_id = n[0]  # first item is the node id
+                action_config = self.planning_env.discrete_env.NodeIdToConfiguration(n_id)
+                control = n[1]
+
+                # print 'node id: ', n_id
 
                 # disregard if already visited
-                if n in self.closed_set:
+                if n_id in self.closed_set:
                     continue
 
                 # have not been evaluated
-                if n not in self.open_set:
-                    self.open_set.add(n)
+                if n_id not in self.open_set:
+                    self.open_set.add(n_id)
 
-                    # plot everything
                     current_config = self.planning_env.discrete_env.NodeIdToConfiguration(current)
-                    neighor_config = self.planning_env.discrete_env.NodeIdToConfiguration(n)
+                    distance = LA.norm(np.asarray(action_config[0:2]) - np.asarray(current_config[0:2]))
 
-                temp_gscore = self.g_scores[current] + \
-                              self.planning_env.ComputeDistance(current, n)
+                temp_gscore = self.g_scores[current] + distance
+                              # self.planning_env.ComputeDistance(current, n)
 
                 # disregard a more costly path
                 try:
-                    self.g_scores[n]
+                    self.g_scores[n_id]
                 except:
-                    self.g_scores[n] = 1000
+                    self.g_scores[n_id] = 1000
 
-                if temp_gscore >= self.g_scores[n]:
+                if temp_gscore >= self.g_scores[n_id]:
                     continue
 
-                self.came_from[n] = current
-                self.g_scores[n] = temp_gscore
-                self.f_scores[n] = self.g_scores[n] + self.planning_env.ComputeHeuristicCost(n, goal_id)
+                h_dist = LA.norm(np.asarray(goal_config) - np.asarray(current_config))
+                self.came_from[n_id] = current
+                # self.came_from[n_id] = control
+                self.g_scores[n_id] = temp_gscore
+                # self.f_scores[n] = self.g_scores[n] + self.planning_env.ComputeHeuristicCost(n, goal_id)
+                self.f_scores[n_id] = self.g_scores[n_id] + h_dist
 
         return 'aiya'  
 
     def path(self, came_from, current):  # current is an id
 
-        #total_path = [self.planning_env.discrete_env.NodeIdToGridCoord(current)]
         total_path = []
         while current in came_from.keys():
             current = came_from[current]
@@ -127,6 +129,5 @@ class AStarPlanner(object):
 
         total_path.reverse()
 
-        # total_path.append([ 4.6, -1.76, 0.00, 1.96, -1.15, 0.87, -1.43])
         print total_path
         return total_path

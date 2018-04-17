@@ -36,6 +36,7 @@ class AStarPlanner(object):
         #  and n is the dimension of the robots configuration space
 
         print 'starting config: ', start_config
+        print 'goal config: ', goal_config
 
         try: 
             self.planning_env.InitializePlot(goal_config)
@@ -90,7 +91,6 @@ class AStarPlanner(object):
 
                 # have not been evaluated
                 if n_id not in self.open_set:
-                    print 'added!'
                     self.open_set.add(n_id)
 
                 temp_gscore = self.g_scores[current] + self.planning_env.ComputeDistance(current, n_id)
@@ -111,28 +111,41 @@ class AStarPlanner(object):
 
         return 'aiya'  
 
-    def path(self, came_from, current):
-        total_path = []
-        count = 0
+    # def path(self, came_from, current):
+    #     total_path = []
+    #     count = 0
 
-        for key, value in came_from.iteritems():
-            action = value[1]
+    #     for key, value in came_from.iteritems():
+    #         action = value[1]
+    #         total_path.append(action)
+
+    #     total_path.reverse()
+    #     # print total_path
+    #     return total_path
+
+    def path(self, came_from, current):  # current is an id
+
+        total_path = []
+        while current in came_from.keys():
+            # pdb.set_trace()
+            current, action = came_from[current]
             total_path.append(action)
 
         total_path.reverse()
-        # print total_path
+
+        print total_path
         return total_path
 
-    # def path(self, came_from, current):  # current is an id
 
-    #     total_path = []
-    #     while current in came_from.keys():
-    #         current = came_from[current]
+    def reconstruct_path(self, cameFrom, current):
 
-    #         # convert current to x, y
-    #         total_path.append(self.planning_env.discrete_env.NodeIdToConfiguration(current))
+        path = []
+        while current in cameFrom.keys():
 
-    #     total_path.reverse()
+            pre_current = current
+            (current, action) = cameFrom[current]
+            path.append(action)
 
-    #     print total_path
-    #     return total_path
+        path.reverse()
+        # print path
+        return path

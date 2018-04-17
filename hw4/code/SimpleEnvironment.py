@@ -255,6 +255,23 @@ class SimpleEnvironment(object):
         
         return cost
 
+    # def ComputeDistance(self, start_id, end_id):
+
+    #     start_coord = np.asarray(self.discrete_env.NodeIdToConfiguration(start_id))
+    #     end_coord = np.asarray(self.discrete_env.NodeIdToConfiguration(end_id))
+    #     dist_x = np.linalg.norm(start_coord[:2] - end_coord[:2])
+    #     dist_theta = abs(start_coord[2] - end_coord[2])
+    #     dx = np.sqrt(self.discrete_env.resolution[0] ** 2 + self.discrete_env.resolution[1] ** 2)
+    #     dtheta = np.pi / 2
+    #     return dist_x/dx + dist_theta/dtheta
+
+    # def ComputeHeuristicCost(self, start_id, goal_id):
+
+    #     cost = 0
+
+    #     cost = self.ComputeDistance(start_id, goal_id)  
+    #     return cost
+
 
 if __name__ == "__main__":
     env = openravepy.Environment()

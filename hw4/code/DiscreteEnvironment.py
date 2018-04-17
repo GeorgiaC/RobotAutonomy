@@ -89,11 +89,6 @@ class DiscreteEnvironment(object):
         # node id 
         node_id = 0
         coord = map(int, coord)
-        # pdb.set_trace()
-
-        # if coord[2] > 3:
-        #     coord[2] = 3
-
         node_id = np.ravel_multi_index(coord, self.num_cells, order='F')
 
 

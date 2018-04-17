@@ -11,6 +11,9 @@ class SimpleRobot(object):
         self.wheel_distance = 0.5
         self.max_wheel_velocity = 1.0
 
+    def get_starting_config(self, config):
+        self.start_config = config
+
     def GetCurrentConfiguration(self):
         t = self.robot.GetTransform()
         aa = openravepy.axisAngleFromRotationMatrix(t)
@@ -30,7 +33,8 @@ class SimpleRobot(object):
         return plan
 
     def ExecuteTrajectory(self, traj, stepsize = 0.01):
-        
+        start_config = np.array(self.start_config)
+        self.SetCurrentConfiguration(start_config)
         # Send the trajectory to the controller and wait for execution to complete
         offset = None
         for action in traj:

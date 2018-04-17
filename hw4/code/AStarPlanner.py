@@ -125,7 +125,6 @@ class AStarPlanner(object):
 
     def path(self, came_from, current):  # current is an id
 
-        pdb.set_trace()
         total_path = []
         count = 0
         while current in came_from.keys():
@@ -139,17 +138,3 @@ class AStarPlanner(object):
 
         print total_path
         return total_path
-
-
-    def reconstruct_path(self, cameFrom, current):
-
-        path = []
-        while current in cameFrom.keys():
-
-            pre_current = current
-            (current, action) = cameFrom[current]
-            path.append(action)
-
-        path.reverse()
-        # print path
-        return path

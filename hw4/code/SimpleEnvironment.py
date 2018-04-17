@@ -158,33 +158,43 @@ class SimpleEnvironment(object):
 
         x_min = self.boundary_limits[0][0]
         y_min = self.boundary_limits[0][1]
+        t_min = self.boundary_limits[0][2]
         x_max = self.boundary_limits[1][0]
         y_max = self.boundary_limits[1][1]
+        t_max = self.boundary_limits[1][2]
 
         # iterate over all actions at orientation? seems like everything is orientation dependent...
         for action in self.actions[coord_angle]:
 
-            # check current config + the transfrom from the list of actions
-            curr_config = config + np.asarray(action.footprint[-1])
-            print curr_config
-            curr_id = self.discrete_env.ConfigurationToNodeId(curr_config)
-            
             bounds_error = False
+            for fp in action.footprint:
+                # check current config + the transfrom from the list of actions
+                curr_config = config + np.asarray(fp)
+                curr_id = self.discrete_env.ConfigurationToNodeId(curr_config)
+                curr_coord = self.discrete_env.ConfigurationToGridCoord(curr_config)
 
-            # check out of bounds in terms of x and y, theta is taken care of
-            if (curr_config[0] < x_min or curr_config[0] > x_max or 
-                curr_config[1] < y_min or curr_config[1] > y_max):
-                bounds_error = True
+                max_coord = np.asarray(self.discrete_env.num_cells)-1
 
-            # might have to check collision on everything in the footprint file ... FUCK
+                # pdb.set_trace()
+            
+                # check out of bounds in terms of x and y
+                if (curr_config[0] < x_min or curr_config[0] > x_max or 
+                    curr_config[1] < y_min or curr_config[1] > y_max or
+                    curr_config[2] < t_min or curr_config[2] > t_max or
+                    np.all(curr_coord < 0) or
+                    not np.all(curr_coord < max_coord)):
+                
+                    bounds_error = True
 
-            # check collision
-            x, y = curr_config[0:2]
-            collision = self.check_collision(x, y)
+                # check collision
+                x, y = curr_config[0:2]
+                collision = self.check_collision(x, y)
+                if collision == True:
+                    continue
 
             # if all good
             if (collision == False and bounds_error == False):
-                successors.append([curr_id, action.control])
+                successors.append([curr_id, action])
 
         return successors
 
@@ -235,5 +245,3 @@ if __name__ == "__main__":
     s = SimpleEnvironment(robot, resolution=np.array([0.05, 0.05, 0.05]))
     s.ConstructActions()
     l = s.GetSuccessors(100)
-
-    pdb.set_trace()

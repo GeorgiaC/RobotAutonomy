@@ -73,18 +73,16 @@ class AStarPlanner(object):
             self.closed_set.add(current)
 
             print 'current: ', current
-            print 'config: ', self.planning_env.discrete_env.NodeIdToConfiguration(current)
+            # print 'config: ', self.planning_env.discrete_env.NodeIdToConfiguration(current)
 
             neighbors = self.planning_env.GetSuccessors(current)
 
             for n in neighbors:  # iterate through all the action, should be 4 of them,
 
-                # pdb.set_trace()
                 n_id = n[0]  # first item is the node id
-                action_config = self.planning_env.discrete_env.NodeIdToConfiguration(n_id)
-                control = n[1]
-
-                # print 'node id: ', n_id
+                control = n[1].control
+                footprint = n[1].footprint
+                action_config = footprint[-1]
 
                 # disregard if already visited
                 if n_id in self.closed_set:

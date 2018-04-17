@@ -23,7 +23,6 @@ class DiscreteEnvironment(object):
         for idx in range(self.dimension):
             self.num_cells[idx] = np.ceil((upper_limits[idx] - lower_limits[idx])/resolution[idx])
 
-
     def ConfigurationToNodeId(self, config):
         
         # TODO:
@@ -89,9 +88,13 @@ class DiscreteEnvironment(object):
         # This function maps a grid coordinate to the associated
         # node id 
         node_id = 0
-        # coord.tolist()
         coord = map(int, coord)
         # pdb.set_trace()
+        # print 'coord is: ', coord
+
+        if coord[2] > 3:
+            coord[2] = 3
+
         node_id = np.ravel_multi_index(coord, self.num_cells, order='F')
 
 

@@ -38,7 +38,7 @@ if __name__ == "__main__":
                               [ 0, 0,  0, 1]])
     table.SetTransform(table_pose)
 
-    resolution = [0.1, 0.1, numpy.pi/4.]
+    resolution = [0.1, 0.1, numpy.pi/2.]
     herb_base = SimpleRobot(env, robot)
     base_env = SimpleEnvironment(herb_base, resolution)
 
@@ -62,6 +62,8 @@ if __name__ == "__main__":
     hgoal.SetShow(True)
 
     herb_base.SetCurrentConfiguration(start_config)
+
+    goal_config = [4, 4, 0]
 
     planner = AStarPlanner(base_env, visualize=False)
     plan = planner.Plan(start_config, goal_config)

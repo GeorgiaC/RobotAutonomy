@@ -105,7 +105,7 @@ class AStarPlanner(object):
                     continue
 
                 # append the action class
-                self.came_from[n_id] = n 
+                self.came_from[n_id] = [current, action] 
                 self.g_scores[n_id] = temp_gscore
                 self.f_scores[n_id] = self.g_scores[n_id] + self.planning_env.ComputeHeuristicCost(n_id, goal_id)
 
@@ -125,11 +125,15 @@ class AStarPlanner(object):
 
     def path(self, came_from, current):  # current is an id
 
+        pdb.set_trace()
         total_path = []
+        count = 0
         while current in came_from.keys():
-            # pdb.set_trace()
+
+            print count
             current, action = came_from[current]
             total_path.append(action)
+            count += 1
 
         total_path.reverse()
 

@@ -90,7 +90,7 @@ class DiscreteEnvironment(object):
         node_id = 0
         coord = map(int, coord)
         # pdb.set_trace()
-        # print 'coord is: ', coord
+        print 'coord is: ', coord
 
         if coord[2] > 3:
             coord[2] = 3

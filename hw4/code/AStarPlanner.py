@@ -65,6 +65,9 @@ class AStarPlanner(object):
                     current = elem
                     min = self.f_scores[elem]
 
+            ###########
+            #  done!  #
+            ###########
             if current == goal_id:
                 print 'goal found'
                 return self.path(self.came_from, current)
@@ -73,16 +76,14 @@ class AStarPlanner(object):
             self.closed_set.add(current)
 
             print 'current: ', current
-            # print 'config: ', self.planning_env.discrete_env.NodeIdToConfiguration(current)
+            print 'config: ', self.planning_env.discrete_env.NodeIdToConfiguration(current)
 
             neighbors = self.planning_env.GetSuccessors(current)
-
+ 
             for n in neighbors:  # iterate through all the action, should be 4 of them,
 
                 n_id = n[0]  # first item is the node id
-                control = n[1].control
-                footprint = n[1].footprint
-                action_config = footprint[-1]
+                action = n[1]
 
                 # disregard if already visited
                 if n_id in self.closed_set:
@@ -92,11 +93,7 @@ class AStarPlanner(object):
                 if n_id not in self.open_set:
                     self.open_set.add(n_id)
 
-                    current_config = self.planning_env.discrete_env.NodeIdToConfiguration(current)
-                    distance = LA.norm(np.asarray(action_config[0:2]) - np.asarray(current_config[0:2]))
-
-                temp_gscore = self.g_scores[current] + distance
-                              # self.planning_env.ComputeDistance(current, n)
+                temp_gscore = self.g_scores[current] + self.planning_env.ComputeDistance(current, n_id)
 
                 # disregard a more costly path
                 try:
@@ -107,25 +104,41 @@ class AStarPlanner(object):
                 if temp_gscore >= self.g_scores[n_id]:
                     continue
 
-                h_dist = LA.norm(np.asarray(goal_config) - np.asarray(current_config))
-                self.came_from[n_id] = current
-                # self.came_from[n_id] = control
+                # append the action class
+                self.came_from[n_id] = n 
                 self.g_scores[n_id] = temp_gscore
-                # self.f_scores[n] = self.g_scores[n] + self.planning_env.ComputeHeuristicCost(n, goal_id)
-                self.f_scores[n_id] = self.g_scores[n_id] + h_dist
+                self.f_scores[n_id] = self.g_scores[n_id] + self.planning_env.ComputeHeuristicCost(n_id, goal_id)
+
 
         return 'aiya'  
 
-    def path(self, came_from, current):  # current is an id
+    def path(self, came_from, current):
 
         total_path = []
+
         while current in came_from.keys():
-            current = came_from[current]
 
-            # convert current to x, y
-            total_path.append(self.planning_env.discrete_env.NodeIdToConfiguration(current))
+            # (current, action) = came_from[current]
+            neighbor = came_from[current]
+            n_id = neighbor[0]
+            action = neighbor[1]
 
+            total_path.append(action)
         total_path.reverse()
 
         print total_path
         return total_path
+
+    # def path(self, came_from, current):  # current is an id
+
+    #     total_path = []
+    #     while current in came_from.keys():
+    #         current = came_from[current]
+
+    #         # convert current to x, y
+    #         total_path.append(self.planning_env.discrete_env.NodeIdToConfiguration(current))
+
+    #     total_path.reverse()
+
+    #     print total_path
+    #     return total_path

@@ -92,7 +92,9 @@ class SimpleEnvironment(object):
         L = 0.5
         r = 0.2
         w_wheel = 1  # for now, the magnitude
-        dt = 4
+        dt = 1
+
+        # calculate dt so that the robot moves 1 block
 
         # Actions is a dictionary that maps orientation of the robot to
         # an action set
@@ -151,6 +153,8 @@ class SimpleEnvironment(object):
         #  and return a list of node_ids and controls that represent the neighboring
         #  nodes
 
+        # make sure you dont add the theta, just going forward!!!
+
         # just check collision???
         config = self.discrete_env.NodeIdToConfiguration(node_id)
         coord = self.discrete_env.NodeIdToGridCoord(node_id)
@@ -167,23 +171,23 @@ class SimpleEnvironment(object):
         for action in self.actions[coord_angle]:
 
             bounds_error = False
+
             for fp in action.footprint:
-                # check current config + the transfrom from the list of actions
-                curr_config = config + np.asarray(fp)
+
+                # DO NOT ADD THE ANGLES
+                next_fp = np.asarray([fp[0], fp[1], 0])
+                curr_config = config + next_fp
+
                 curr_id = self.discrete_env.ConfigurationToNodeId(curr_config)
                 curr_coord = self.discrete_env.ConfigurationToGridCoord(curr_config)
-
                 max_coord = np.asarray(self.discrete_env.num_cells)-1
-
-                # pdb.set_trace()
             
                 # check out of bounds in terms of x and y
                 if (curr_config[0] < x_min or curr_config[0] > x_max or 
                     curr_config[1] < y_min or curr_config[1] > y_max or
                     curr_config[2] < t_min or curr_config[2] > t_max or
-                    np.all(curr_coord < 0) or
-                    not np.all(curr_coord < max_coord)):
-                
+                    not np.all(curr_coord > 0)):
+
                     bounds_error = True
 
                 # check collision
@@ -194,9 +198,16 @@ class SimpleEnvironment(object):
 
             # if all good
             if (collision == False and bounds_error == False):
-                successors.append([curr_id, action])
+
+                final_footprint = action.footprint[-1]
+                final_config = np.array([final_footprint[0], final_footprint[1], 0])
+                dest_config = np.asarray(config) + final_config
+                dest_id = self.discrete_env.ConfigurationToNodeId(dest_config)
+
+                successors.append([dest_id, action])
 
         return successors
+
 
     def check_collision(self, x, y):
         transform = np.array([[1, 0, 0, x],
@@ -216,8 +227,8 @@ class SimpleEnvironment(object):
         # by the two node ids
         start_config = self.discrete_env.NodeIdToConfiguration(start_id)
         end_config = self.discrete_env.NodeIdToConfiguration(end_id)
-        start_pos = start_config[0:2]
-        end_pos = end_config[0:2]
+        start_pos = np.asarray(start_config[0:2])
+        end_pos = np.asarray(end_config[0:2])
 
         dist = LA.norm(start_pos - end_pos)
 

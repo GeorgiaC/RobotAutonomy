@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     herb_base.SetCurrentConfiguration(start_config)
 
-    goal_config = [4, 4, 0]
+    goal_config = [4, 4, 0.39269908169872414]
 
     planner = AStarPlanner(base_env, visualize=False)
     plan = planner.Plan(start_config, goal_config)

@@ -167,6 +167,8 @@ class SimpleEnvironment(object):
         y_max = self.boundary_limits[1][1]
         t_max = self.boundary_limits[1][2]
 
+        count = 0  # indicating whether or not it's a translation or turn
+
         # iterate over all actions at orientation? seems like everything is orientation dependent...
         for action in self.actions[coord_angle]:
 
@@ -174,26 +176,19 @@ class SimpleEnvironment(object):
 
             for fp in action.footprint:
 
-                # DO NOT ADD THE ANGLES
-                next_fp = np.asarray([fp[0], fp[1], 0])
-                curr_config = config + next_fp
+                dx = fp[0]
+                dy = fp[1]
+                the = fp[2]
 
-                if not np.all(curr_config > -5):
-                    bounds_error = True
-                    break
-
-                curr_id = self.discrete_env.ConfigurationToNodeId(curr_config)
-
-                curr_coord = self.discrete_env.ConfigurationToGridCoord(curr_config)
-                max_coord = np.asarray(self.discrete_env.num_cells)-1
+                curr_config = np.array([config[0]+dx, config[1]+dy, the])
             
                 # check out of bounds in terms of x and y
                 if (curr_config[0] < x_min or curr_config[0] > x_max or 
                     curr_config[1] < y_min or curr_config[1] > y_max or
-                    curr_config[2] < t_min or curr_config[2] > t_max or
-                    not np.all(curr_coord > 0)):
+                    curr_config[2] < t_min or curr_config[2] > t_max ):
 
                     bounds_error = True
+                    continue
 
                 # check collision
                 x, y = curr_config[0:2]
@@ -205,13 +200,13 @@ class SimpleEnvironment(object):
             if (collision == False and bounds_error == False):
 
                 final_footprint = action.footprint[-1]
-                final_config = np.array([final_footprint[0], final_footprint[1], 0])
-
-                dest_config = np.asarray(config) + final_config
+                dest_config = np.asarray([config[0], config[1], 0]) + final_footprint
                 dest_id = self.discrete_env.ConfigurationToNodeId(dest_config)
 
                 # im not adding initial config to the list of action
                 successors.append([dest_id, action])
+
+            count += 1  # indicator
 
         return successors
 
@@ -250,6 +245,11 @@ class SimpleEnvironment(object):
         # given by the two node ids
         start_config = self.discrete_env.NodeIdToConfiguration(start_id)
         end_config = self.discrete_env.NodeIdToConfiguration(goal_id)
+
+        # weighting factor
+        w = np.array([1, 1, 0.1])
+        start_config = start_config*w
+        end_confg = end_config*w 
 
         cost = LA.norm(np.asarray(start_config) - np.asarray(end_config))
         

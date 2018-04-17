@@ -79,12 +79,10 @@ class AStarPlanner(object):
 
             neighbors = self.planning_env.GetSuccessors(current)
 
-            print ('iter')
             for n in neighbors:  # iterate through all the action
 
                 n_id = n[0]  # first item is the node id
                 action = n[1]
-                print 'action footprint: ', (action.footprint[-1])
 
                 # disregard if already visited
                 if n_id in self.closed_set:
@@ -92,6 +90,7 @@ class AStarPlanner(object):
 
                 # have not been evaluated
                 if n_id not in self.open_set:
+                    print 'added!'
                     self.open_set.add(n_id)
 
                 temp_gscore = self.g_scores[current] + self.planning_env.ComputeDistance(current, n_id)

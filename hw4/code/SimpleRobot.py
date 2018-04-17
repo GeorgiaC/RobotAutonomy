@@ -1,4 +1,6 @@
-import numpy, openravepy, time
+import openravepy, time
+import pdb
+import numpy as np
 
 class SimpleRobot(object):
 
@@ -13,12 +15,12 @@ class SimpleRobot(object):
         t = self.robot.GetTransform()
         aa = openravepy.axisAngleFromRotationMatrix(t)
         pose = [t[0,3], t[1,3], aa[2]]
-        return numpy.array(pose)
+        return np.array(pose)
 
     def SetCurrentConfiguration(self, config):
         
-        transform = [[numpy.cos(config[2]), -numpy.sin(config[2]), 0, config[0]],
-                     [numpy.sin(config[2]),  numpy.cos(config[2]), 0, config[1]],
+        transform = [[np.cos(config[2]), -np.sin(config[2]), 0, config[0]],
+                     [np.sin(config[2]),  np.cos(config[2]), 0, config[1]],
                      [0, 0, 1, 0],
                      [0, 0, 0, 1]]
         self.robot.SetTransform(transform)
@@ -32,10 +34,11 @@ class SimpleRobot(object):
         # Send the trajectory to the controller and wait for execution to complete
         offset = None
         for action in traj:
+            # pdb.set_trace()
             config = self.GetCurrentConfiguration()
 
             for fconfig in action.footprint:
-                new_config = fconfig.copy()
+                new_config = np.asarray(fconfig).copy()
                 new_config[:2] += config[:2]
                 self.SetCurrentConfiguration(new_config)
                 time.sleep(0.001)

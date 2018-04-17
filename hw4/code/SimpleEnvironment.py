@@ -178,7 +178,12 @@ class SimpleEnvironment(object):
                 next_fp = np.asarray([fp[0], fp[1], 0])
                 curr_config = config + next_fp
 
+                if not np.all(curr_config > -5):
+                    bounds_error = True
+                    break
+
                 curr_id = self.discrete_env.ConfigurationToNodeId(curr_config)
+
                 curr_coord = self.discrete_env.ConfigurationToGridCoord(curr_config)
                 max_coord = np.asarray(self.discrete_env.num_cells)-1
             
@@ -201,9 +206,11 @@ class SimpleEnvironment(object):
 
                 final_footprint = action.footprint[-1]
                 final_config = np.array([final_footprint[0], final_footprint[1], 0])
+
                 dest_config = np.asarray(config) + final_config
                 dest_id = self.discrete_env.ConfigurationToNodeId(dest_config)
 
+                # im not adding initial config to the list of action
                 successors.append([dest_id, action])
 
         return successors

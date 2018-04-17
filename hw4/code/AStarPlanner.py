@@ -35,6 +35,8 @@ class AStarPlanner(object):
         #  of dimension k x n where k is the number of waypoints
         #  and n is the dimension of the robots configuration space
 
+        print 'starting config: ', start_config
+
         try: 
             self.planning_env.InitializePlot(goal_config)
         except:
@@ -53,7 +55,7 @@ class AStarPlanner(object):
 
         while len(self.open_set) > 0:
             # find the index with the lowest f_Score in open_set
-            min = 10000
+            min = 1000
             for elem in self.open_set:
 
                 try:
@@ -75,15 +77,14 @@ class AStarPlanner(object):
             self.open_set.remove(current) 
             self.closed_set.add(current)
 
-            print 'current: ', current
-            print 'config: ', self.planning_env.discrete_env.NodeIdToConfiguration(current)
-
             neighbors = self.planning_env.GetSuccessors(current)
- 
-            for n in neighbors:  # iterate through all the action, should be 4 of them,
+
+            print ('iter')
+            for n in neighbors:  # iterate through all the action
 
                 n_id = n[0]  # first item is the node id
                 action = n[1]
+                print 'action footprint: ', (action.footprint[-1])
 
                 # disregard if already visited
                 if n_id in self.closed_set:
@@ -109,24 +110,18 @@ class AStarPlanner(object):
                 self.g_scores[n_id] = temp_gscore
                 self.f_scores[n_id] = self.g_scores[n_id] + self.planning_env.ComputeHeuristicCost(n_id, goal_id)
 
-
         return 'aiya'  
 
     def path(self, came_from, current):
-
         total_path = []
+        count = 0
 
-        while current in came_from.keys():
-
-            # (current, action) = came_from[current]
-            neighbor = came_from[current]
-            n_id = neighbor[0]
-            action = neighbor[1]
-
+        for key, value in came_from.iteritems():
+            action = value[1]
             total_path.append(action)
-        total_path.reverse()
 
-        print total_path
+        total_path.reverse()
+        # print total_path
         return total_path
 
     # def path(self, came_from, current):  # current is an id

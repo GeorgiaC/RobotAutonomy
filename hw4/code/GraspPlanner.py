@@ -1,4 +1,5 @@
 import logging, numpy, openravepy
+import pdb
 
 class GraspPlanner(object):
 

@@ -69,7 +69,7 @@ class GraspPlanner(object):
                 print 'COLLISION'
 
             if grasp_config is not None and collision_base == False:
-                # TODO check base collision
+                
                 print 'base config: ', base_config
                 print 'grasp config: ', grasp_config
                 return base_config, grasp_config

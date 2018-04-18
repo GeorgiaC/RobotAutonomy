@@ -12,7 +12,10 @@ class GraspPlanner(object):
     def GetBasePoseForObjectGrasp(self, obj):
 
         # Load grasp database
-        gmodel = openravepy.databases.grasping.GraspingModel(self.robot, obj)
+        self.gmodel = openravepy.databases.grasping.GraspingModel(self.robot, obj)
+        self.grasps = self.gmodel.grasps
+        self.grasp_indices = self.gmodel.graspindices
+
         if not gmodel.load():
             gmodel.autogenerate()
 
@@ -24,7 +27,13 @@ class GraspPlanner(object):
         #  a base pose and associated grasp config for the 
         #  grasping the bottle
         ###################################################################
-        
+
+        # base_pose, position of herb's body
+        # grasp_config 7-DOF arm config
+        order_grasps()
+
+        pdb.set_trace()
+
         return base_pose, grasp_config
 
     def PlanToGrasp(self, obj):
@@ -55,4 +64,58 @@ class GraspPlanner(object):
         # Grasp the bottle
         task_manipulation = openravepy.interfaces.TaskManipulation(self.robot)
         task_manipultion.CloseFingers()
-    
+
+    def order_grasps(self):
+        self.grasps_ordered = self.grasps.copy() #you should change the order of self.grasps_ordered
+        for grasp in self.grasps_ordered:
+            grasp[self.graspindices.get('performance')] = self.eval_grasp(grasp)
+            
+        # sort!
+        order = np.argsort(self.grasps_ordered[:,self.graspindices.get('performance')[0]])
+        order = order[::-1]
+        self.grasps_ordered = self.grasps_ordered[order]
+
+    def eval_grasp(self, grasp):
+        with self.robot:
+            #contacts is a 2d array, where contacts[i,0-2] are the positions of contact i and contacts[i,3-5] is the direction
+            try:
+                contacts,finalconfig,mindist,volume = self.gmodel.testGrasp(grasp=grasp,translate=True,forceclosure=False)
+
+                obj_position = self.gmodel.target.GetTransform()[0:3,3]
+                # for each contact
+                G = np.array([]) #the wrench matrix
+
+                arr = np.empty([6, len(contacts)])
+                count = 0
+                for c in contacts:
+                    pos = c[0:3] - obj_position
+                    dir = -c[3:] #this is already a unit vector
+                    
+                    ##############
+                    # start TODO #
+                    ##############
+                    p = np.transpose(pos)
+                    p = np.reshape(p, (3, 1))
+                    n = np.transpose(dir)
+                    n = np.reshape(n, (3, 1))
+
+                    cross = np.cross(pos, dir)
+                    cross = np.reshape(cross, (3, 1))
+
+                    fill = np.concatenate((n, cross), axis=0)
+                    fill = np.reshape(fill, (6,))
+
+                    arr[:, count] = fill
+                    count = count + 1
+                    # end TODO
+
+                # start TODO
+                G = arr
+                eigvals = np.sqrt(LA.eigvals(G.dot(np.transpose(G))))
+                Q1 = np.min(eigvals)
+                Q2 = np.sqrt(LA.det(G.dot(np.transpose(G))))
+                ############
+                # end TODO #
+                ############
+
+                return Q1 #change this

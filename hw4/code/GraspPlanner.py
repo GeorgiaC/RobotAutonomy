@@ -89,11 +89,11 @@ class GraspPlanner(object):
         # Now plan to the base pose
 
         print 'ending base pose: ', base_pose
-        # base_plan = self.base_planner.Plan(start_pose, base_pose)
-        # base_traj = self.base_planner.planning_env.herb.ConvertPlanToTrajectory(base_plan)
+        base_plan = self.base_planner.Plan(start_pose, base_pose)
+        base_traj = self.base_planner.planning_env.herb.ConvertPlanToTrajectory(base_plan)
 
         print 'Executing base trajectory'
-        # self.base_planner.planning_env.herb.ExecuteTrajectory(base_traj)
+        self.base_planner.planning_env.herb.ExecuteTrajectory(base_traj)
 
         # Now plan the arm to the grasp configuration
         grasp_config = [4.3840316, 0.41922129, 0.16, 2.15893376, -3.1536364, -0.2443327, 0.01494979]
@@ -105,7 +105,7 @@ class GraspPlanner(object):
         self.arm_planner.planning_env.herb.ExecuteTrajectory(arm_traj)
         # Grasp the bottle
         task_manipulation = openravepy.interfaces.TaskManipulation(self.robot)
-        task_manipultion.CloseFingers()
+        task_manipulation.CloseFingers()
 
 
     def check_collision(self, x, y):

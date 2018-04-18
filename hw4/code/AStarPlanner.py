@@ -136,5 +136,4 @@ class AStarPlanner(object):
 
         total_path.reverse()
 
-        print total_path
         return total_path

@@ -85,7 +85,6 @@ class SimpleEnvironment(object):
         pl.ion()
         pl.show()
 
-        
 
     def ConstructActions(self):
         L = 0.5

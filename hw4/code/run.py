@@ -8,6 +8,7 @@ from SimpleRobot import SimpleRobot
 from SimpleEnvironment import SimpleEnvironment
 from GraspPlanner import GraspPlanner
 from AStarPlanner import AStarPlanner
+from RRTConnectPlanner import RRTConnectPlanner
 # TODO: Import the applicable RRTPlanner
 
 if __name__ == "__main__":
@@ -76,7 +77,7 @@ if __name__ == "__main__":
     base_env = SimpleEnvironment(herb_base, resolution)
 
     base_planner = AStarPlanner(base_env, visualize = False)
-    arm_planner = None
+    arm_planner = RRTConnectPlanner(arm_env, visualize=False)
     # TODO: Here initialize your arm planner
   
     # add a table and move the robot into place

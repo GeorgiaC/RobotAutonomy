@@ -64,9 +64,11 @@ class GraspPlanner(object):
                                                       filteroptions=openravepy.IkFilterOptions.CheckEnvCollisions)
 
             # check for collision
-            collision = self.check_collision(pose[4], pose[5])
+            collision_base = self.check_collision(pose[4], pose[5])
+            if collision_base == True:
+                print 'COLLISION'
 
-            if grasp_config is not None and collision == False:
+            if grasp_config is not None and collision_base == False:
                 # TODO check base collision
                 print 'base config: ', base_config
                 print 'grasp config: ', grasp_config
@@ -87,14 +89,14 @@ class GraspPlanner(object):
         # Now plan to the base pose
 
         print 'ending base pose: ', base_pose
-        base_plan = self.base_planner.Plan(start_pose, base_pose)
-        base_traj = self.base_planner.planning_env.herb.ConvertPlanToTrajectory(base_plan)
+        # base_plan = self.base_planner.Plan(start_pose, base_pose)
+        # base_traj = self.base_planner.planning_env.herb.ConvertPlanToTrajectory(base_plan)
 
         print 'Executing base trajectory'
-        self.base_planner.planning_env.herb.ExecuteTrajectory(base_traj)
-        # self.base_planner.planning_env.herb.get_starting_config(start_pose)  # added by Chris
+        # self.base_planner.planning_env.herb.ExecuteTrajectory(base_traj)
 
         # Now plan the arm to the grasp configuration
+        grasp_config = [4.3840316, 0.41922129, 0.16, 2.15893376, -3.1536364, -0.2443327, 0.01494979]
         start_config = np.array(self.arm_planner.planning_env.herb.GetCurrentConfiguration())
         arm_plan = self.arm_planner.Plan(start_config, grasp_config)
         arm_traj = self.arm_planner.planning_env.herb.ConvertPlanToTrajectory(arm_plan)

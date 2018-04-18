@@ -306,7 +306,6 @@ class SimpleEnvironment(object):
         pl.draw()
 
 
-
 # if __name__ == "__main__":
 #     env = openravepy.Environment()
 #     PR2robot = env.ReadRobotXMLFile('models/robots/herb2_padded.robot.xml')

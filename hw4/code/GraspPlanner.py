@@ -52,44 +52,25 @@ class GraspPlanner(object):
         manipulator = self.robot.SetActiveManipulator('left_wam')
 
         # attempting to get the base pose from inverse reachability 
-        goals = []
-        numfailures = 0
-
-
         poses, jointstate = sampler_func(69)
         
         for pose in poses:
             self.robot.SetTransform(pose)
             self.robot.SetDOFValues(*jointstate)
 
-            # validate that base is not in collision
-            # if not manipulator.CheckIndependentCollision(openravepy.CollisionReport()):
-            # arm_config = manipulator.FindIKSolution(Tgrasp, 
-            #                                         filteroptions=openravepy.IkFilterOptions.CheckEnvCollisions)
-
             angle = openravepy.axisAngleFromQuat(pose)
             base_config = np.array([pose[4], pose[5], angle[2]])
             grasp_config = manipulator.FindIKSolution(Tgrasp,
                                                       filteroptions=openravepy.IkFilterOptions.CheckEnvCollisions)
-            if grasp_config is not None:
-                # TODO check abse collision
-                print base_config
-                print grasp_config
+
+            # check for collision
+            collision = self.check_collision(pose[4], pose[5])
+
+            if grasp_config is not None and collision == False:
+                # TODO check base collision
+                print 'base config: ', base_config
+                print 'grasp config: ', grasp_config
                 return base_config, grasp_config
-
-            # if arm_config is not None:
-            #     pose = self.robot.GetTransform()
-            #     xy_pose = [pose[0][3], pose[1][3]]
-            #     goals.append((Tgrasp,xy_pose,arm_config,pose))
-
-            # elif manipulator.FindIKSolution(Tgrasp,0) is None:
-            #     numfailures += 1
-            #     print "Grasp is in collision!"
-
-        # goals = self.GetBasePoseFromIR(manip, sampler_func, Tgrasp, 1, 2)
-
-        # tempt for testing
-        # grasp_config = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
     def PlanToGrasp(self, obj):
         # start pose 
@@ -123,6 +104,15 @@ class GraspPlanner(object):
         # Grasp the bottle
         task_manipulation = openravepy.interfaces.TaskManipulation(self.robot)
         task_manipultion.CloseFingers()
+
+
+    def check_collision(self, x, y):
+        transform = np.array([[1, 0, 0, x],
+                              [0, 1, 0, y],
+                              [0, 0, 1, 0],
+                              [0, 0, 0, 1]])
+        self.robot.SetTransform(transform)
+        return self.robot.GetEnv().CheckCollision(self.robot)
 
 
     ############################

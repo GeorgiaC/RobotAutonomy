@@ -1,6 +1,7 @@
 import logging, openravepy
 import pdb
 import numpy as np
+from numpy import linalg as LA
 
 class GraspPlanner(object):
 
@@ -14,11 +15,12 @@ class GraspPlanner(object):
 
         # Load grasp database
         self.gmodel = openravepy.databases.grasping.GraspingModel(self.robot, obj)
-        self.grasps = self.gmodel.grasps
-        self.grasp_indices = self.gmodel.graspindices
 
         if not self.gmodel.load():
             self.gmodel.autogenerate()
+
+        self.grasps = self.gmodel.grasps
+        self.grasp_indices = self.gmodel.graspindices
 
         base_pose = None
         grasp_config = None
@@ -31,9 +33,10 @@ class GraspPlanner(object):
 
         # base_pose, position of herb's body
         # grasp_config 7-DOF arm config
+
         self.order_grasps()
 
-        pdb.set_trace()
+
 
         return base_pose, grasp_config
 
@@ -61,18 +64,20 @@ class GraspPlanner(object):
 
         print 'Executing arm trajectory'
         self.arm_planner.planning_env.herb.ExecuteTrajectory(arm_traj)
-
         # Grasp the bottle
         task_manipulation = openravepy.interfaces.TaskManipulation(self.robot)
         task_manipultion.CloseFingers()
 
     def order_grasps(self):
-        self.grasps_ordered = np.asarray(self.grasps).copy
+        self.grasps_ordered = np.asarray(self.grasps).copy()
+
+        print 'grasps ordered: ', self.grasps_ordered
+
         for grasp in self.grasps_ordered:
-            grasp[self.graspindices.get('performance')] = self.eval_grasp(grasp)
+            grasp[self.grasp_indices.get('performance')] = self.eval_grasp(grasp)
 
         # sort!
-        order = np.argsort(self.grasps_ordered[:,self.graspindices.get('performance')[0]])
+        order = np.argsort(self.grasps_ordered[:,self.grasp_indices.get('performance')[0]])
         order = order[::-1]
         self.grasps_ordered = self.grasps_ordered[order]
 
@@ -113,8 +118,6 @@ class GraspPlanner(object):
                 return Q1
 
             except openravepy.planning_error, e:
-                return 0.00
-            except np.LinAlgError:
                 return 0.00
 
     # def eval_graps(self, grasp):

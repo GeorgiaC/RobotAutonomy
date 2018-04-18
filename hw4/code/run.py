@@ -9,6 +9,7 @@ from SimpleEnvironment import SimpleEnvironment
 from GraspPlanner import GraspPlanner
 from AStarPlanner import AStarPlanner
 from RRTConnectPlanner import RRTConnectPlanner
+from RRTPlanner import RRTPlanner
 # TODO: Import the applicable RRTPlanner
 
 if __name__ == "__main__":

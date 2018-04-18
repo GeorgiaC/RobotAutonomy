@@ -43,7 +43,7 @@ class RRTConnectPlanner(object):
                 temp = ftree.AddVertex(pot_f)
                 ftree.AddEdge(f_id, temp)
 
-                self.planning_env.PlotEdge(f_vert, pot_f)
+                # self.planning_env.PlotEdge(f_vert, pot_f)
 
 
             new_r = self.planning_env.GenerateRandomConfiguration()
@@ -57,7 +57,7 @@ class RRTConnectPlanner(object):
                 temp = rtree.AddVertex(pot_r)
                 rtree.AddEdge(r_id, temp)
 
-                self.planning_env.PlotEdge(r_vert, pot_r)
+                # self.planning_env.PlotEdge(r_vert, pot_r)
 
 
             if (dist_f <= epsilon and dist_r <= epsilon) or self.planning_env.Extend(f_vert, r_vert)!= None:

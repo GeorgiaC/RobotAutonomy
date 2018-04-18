@@ -33,9 +33,10 @@ class SimpleRobot(object):
         return plan
 
     def ExecuteTrajectory(self, traj, stepsize = 0.01):
-        start_config = np.array(self.start_config)
-        self.SetCurrentConfiguration(start_config)
+        # start_config = np.array(self.start_config)
+        # self.SetCurrentConfiguration(start_config)
         # Send the trajectory to the controller and wait for execution to complete
+        
         offset = None
         for action in traj:
             # pdb.set_trace()

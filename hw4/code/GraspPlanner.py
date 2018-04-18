@@ -37,11 +37,11 @@ class GraspPlanner(object):
         # inverse reachibilty
         self.irmodel = openravepy.databases.inversereachability.InverseReachabilityModel(self.robot)
         if not self.irmodel.load():
-            print "FUCK NO, it's gonna take forever!!!!!!!!!"
+            print "NO, it's gonna take forever!!!!!!!!!"
             self.irmodel.autogenerate()
             self.irmodel.load()
         else:
-            print "FUCK YES"
+            print "IR available"
 
         self.order_grasps()
         best_grasp = self.grasps_ordered[0]
@@ -71,6 +71,11 @@ class GraspPlanner(object):
             base_config = np.array([pose[4], pose[5], angle[2]])
             grasp_config = manipulator.FindIKSolution(Tgrasp,
                                                       filteroptions=openravepy.IkFilterOptions.CheckEnvCollisions)
+            if grasp_config is not None:
+                # TODO check abse collision
+                print base_config
+                print grasp_config
+                return base_config, grasp_config
 
             # if arm_config is not None:
             #     pose = self.robot.GetTransform()
@@ -83,13 +88,8 @@ class GraspPlanner(object):
 
         # goals = self.GetBasePoseFromIR(manip, sampler_func, Tgrasp, 1, 2)
 
-        print base_config
-        print grasp_config
-
         # tempt for testing
-        grasp_config = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-
-        return base_config, grasp_config
+        # grasp_config = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
     def PlanToGrasp(self, obj):
         # start pose 

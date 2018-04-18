@@ -34,7 +34,31 @@ class GraspPlanner(object):
         # base_pose, position of herb's body
         # grasp_config 7-DOF arm config
 
+        # inverse reachibilty
+        self.irmodel = openravepy.databases.inversereachability.InverseReachabilityModel(self.robot)
+        if not self.irmodel.load():
+            print "FUCK NO"
+            self.irmodel.autogenerate()
+            self.irmodel.load()
+        else:
+            print "FUCK YES"
+
         self.order_grasps()
+        best_grasp = self.grasps_ordered[0]
+        Tgrasp = self.gmodel.getGlobalGraspTransform(best_grasp, collisionfree=True)
+
+        _, sampler_func, _ = self.irmodel.computeBaseDistribution(Tgrasp)
+
+        manipulator = self.robot.SetActiveManipulator('left_wam')
+        goals = self.GetBasePoseFromIR(manip, sampler_func, Tgrasp, 1, 2)
+
+        print 'goals: ', goals
+        pdb.set_trace()
+
+
+
+
+        
 
 
 
@@ -70,8 +94,6 @@ class GraspPlanner(object):
 
     def order_grasps(self):
         self.grasps_ordered = np.asarray(self.grasps).copy()
-
-        print 'grasps ordered: ', self.grasps_ordered
 
         for grasp in self.grasps_ordered:
             grasp[self.grasp_indices.get('performance')] = self.eval_grasp(grasp)

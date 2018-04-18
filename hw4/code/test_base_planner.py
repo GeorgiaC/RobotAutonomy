@@ -65,7 +65,7 @@ if __name__ == "__main__":
     herb_base.SetCurrentConfiguration(start_config)
 
 
-    #Hardcode configs
+    #Hardcode config
     # start_config = [0, 0, 0]
     # goal_config = [2., 2., 2.]
 

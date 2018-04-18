@@ -114,9 +114,15 @@ class AStarPlanner(object):
                 self.f_scores[n] = self.g_scores[n] + self.planning_env.ComputeHeuristicCost(n, goal_id)
 
         return 'aiya'  
+<<<<<<< HEAD
 
     def path(self, came_from, current):  # current is an id
 
+=======
+
+    def path(self, came_from, current):  # current is an id
+
+>>>>>>> origin/master
         #total_path = [self.planning_env.discrete_env.NodeIdToGridCoord(current)]
         total_path = []
         while current in came_from.keys():
@@ -124,9 +130,17 @@ class AStarPlanner(object):
 
             # convert current to x, y
             total_path.append(self.planning_env.discrete_env.NodeIdToConfiguration(current))
+<<<<<<< HEAD
 
         total_path.reverse()
 
         # total_path.append([ 4.6, -1.76, 0.00, 1.96, -1.15, 0.87, -1.43])
         print total_path
+=======
+
+        total_path.reverse()
+
+        print total_path
+
+>>>>>>> origin/master
         return total_path

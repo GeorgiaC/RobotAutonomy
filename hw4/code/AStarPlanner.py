@@ -109,6 +109,12 @@ class AStarPlanner(object):
                 self.g_scores[n_id] = temp_gscore
                 self.f_scores[n_id] = self.g_scores[n_id] + self.planning_env.ComputeHeuristicCost(n_id, goal_id)
 
+
+                #plotting
+                node_coord = self.planning_env.discrete_env.NodeIdToConfiguration(current)
+                id_coord = self.planning_env.discrete_env.NodeIdToConfiguration(n_id)
+                self.planning_env.PlotEdge(node_coord, id_coord)
+
         return 'aiya'  
 
     # def path(self, came_from, current):

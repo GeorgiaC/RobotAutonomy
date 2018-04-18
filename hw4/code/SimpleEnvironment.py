@@ -92,7 +92,7 @@ class SimpleEnvironment(object):
         L = 0.5
         r = 0.2
         w_wheel = 1  # for now, the magnitude
-        dt = 1
+        dt = self.discrete_env.resolution[0]/.2 #time to traverse one cell
 
         # calculate dt so that the robot moves 1 block
 
@@ -194,6 +194,7 @@ class SimpleEnvironment(object):
                 x, y = curr_config[0:2]
                 collision = self.check_collision(x, y)
                 if collision == True:
+                    print "collision"
                     continue
 
             # if all good
@@ -272,11 +273,44 @@ class SimpleEnvironment(object):
     #     cost = self.ComputeDistance(start_id, goal_id)  
     #     return cost
 
+    def InitializePlot(self, goal_config):
+        self.fig = pl.figure()
+        pl.xlim([self.boundary_limits[0][0], self.boundary_limits[1][0]])
+        pl.ylim([self.boundary_limits[0][1], self.boundary_limits[1][1]])
+        pl.plot(goal_config[0], goal_config[1], 'gx')
 
-if __name__ == "__main__":
-    env = openravepy.Environment()
-    PR2robot = env.ReadRobotXMLFile('models/robots/herb2_padded.robot.xml')
-    robot = SR.SimpleRobot(env, PR2robot)
-    s = SimpleEnvironment(robot, resolution=np.array([0.05, 0.05, 0.05]))
-    s.ConstructActions()
-    l = s.GetSuccessors(100)
+        # Show all obstacles in environment
+        for b in self.robot.GetEnv().GetBodies():
+            if b.GetName() == self.robot.GetName():
+                continue
+            bb = b.ComputeAABB()
+            pl.plot([bb.pos()[0] - bb.extents()[0],
+                     bb.pos()[0] + bb.extents()[0],
+                     bb.pos()[0] + bb.extents()[0],
+                     bb.pos()[0] - bb.extents()[0],
+                     bb.pos()[0] - bb.extents()[0]],
+                    [bb.pos()[1] - bb.extents()[1],
+                     bb.pos()[1] - bb.extents()[1],
+                     bb.pos()[1] + bb.extents()[1],
+                     bb.pos()[1] + bb.extents()[1],
+                     bb.pos()[1] - bb.extents()[1]], 'r')
+                    
+                     
+        pl.ion()
+        pl.show()
+        
+    def PlotEdge(self, sconfig, econfig):
+        pl.plot([sconfig[0], econfig[0]],
+                [sconfig[1], econfig[1]],
+                'k.-', linewidth=2.5)
+        pl.draw()
+
+
+
+# if __name__ == "__main__":
+#     env = openravepy.Environment()
+#     PR2robot = env.ReadRobotXMLFile('models/robots/herb2_padded.robot.xml')
+#     robot = SR.SimpleRobot(env, PR2robot)
+#     s = SimpleEnvironment(robot, resolution=np.array([0.05, 0.05, 0.05]))
+#     s.ConstructActions()
+#     l = s.GetSuccessors(100)

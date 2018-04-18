@@ -37,7 +37,7 @@ class GraspPlanner(object):
         # inverse reachibilty
         self.irmodel = openravepy.databases.inversereachability.InverseReachabilityModel(self.robot)
         if not self.irmodel.load():
-            print "FUCK NO"
+            print "FUCK NO, it's gonna take forever!!!!!!!!!"
             self.irmodel.autogenerate()
             self.irmodel.load()
         else:
@@ -50,11 +50,41 @@ class GraspPlanner(object):
         _, sampler_func, _ = self.irmodel.computeBaseDistribution(Tgrasp)
 
         manipulator = self.robot.SetActiveManipulator('left_wam')
-        goals = self.GetBasePoseFromIR(manip, sampler_func, Tgrasp, 1, 2)
 
-        print 'goals: ', goals
-        pdb.set_trace()
+        # attempting to get the base pose from inverse reachability 
+        goals = []
+        numfailures = 0
 
+
+        poses, jointstate = sampler_func(69)
+        
+        for pose in poses:
+            self.robot.SetTransform(pose)
+            self.robot.SetDOFValues(*jointstate)
+
+            # validate that base is not in collision
+            # if not manipulator.CheckIndependentCollision(openravepy.CollisionReport()):
+            # arm_config = manipulator.FindIKSolution(Tgrasp, 
+            #                                         filteroptions=openravepy.IkFilterOptions.CheckEnvCollisions)
+
+            angle = openravepy.axisAngleFromQuat(pose)
+            base_config = np.array([pose[4], pose[5], angle[2]])
+            grasp_config = manipulator.FindIKSolution(Tgrasp,
+                                                      filteroptions=openravepy.IkFilterOptions.CheckEnvCollisions)
+
+            # if arm_config is not None:
+            #     pose = self.robot.GetTransform()
+            #     xy_pose = [pose[0][3], pose[1][3]]
+            #     goals.append((Tgrasp,xy_pose,arm_config,pose))
+
+            # elif manipulator.FindIKSolution(Tgrasp,0) is None:
+            #     numfailures += 1
+            #     print "Grasp is in collision!"
+
+        # goals = self.GetBasePoseFromIR(manip, sampler_func, Tgrasp, 1, 2)
+
+        print base_config
+        print grasp_config
 
 
 
@@ -141,6 +171,3 @@ class GraspPlanner(object):
 
             except openravepy.planning_error, e:
                 return 0.00
-
-    # def eval_graps(self, grasp):
-

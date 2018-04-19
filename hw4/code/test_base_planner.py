@@ -66,8 +66,8 @@ if __name__ == "__main__":
 
 
     #Hardcode config
-    # start_config = [0, 0, 0]
-    # goal_config = [2., 2., 2.]
+    start_config = [0, 0, 0]
+    goal_config = [2., 2., 2.]
 
     planner = AStarPlanner(base_env, visualize=False)
     plan = planner.Plan(start_config, goal_config)

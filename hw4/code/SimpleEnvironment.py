@@ -143,6 +143,9 @@ class SimpleEnvironment(object):
             action_90r = Action(control_90r, fp_90r)
             self.actions[idx].append(action_90r)
 
+            #plotting action footprints
+            # self.PlotActionFootprints(idx)
+
 
     def GetSuccessors(self, node_id):
 

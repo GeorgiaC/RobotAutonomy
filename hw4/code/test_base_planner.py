@@ -33,7 +33,7 @@ if __name__ == "__main__":
     table = env.ReadKinBodyXMLFile('models/objects/table.kinbody.xml')
     env.Add(table)
     
-    table_pose = numpy.array([[ 0, 0, -1, 0.7], 
+    table_pose = numpy.array([[ 0, 0, -1, 0.6], 
                               [-1, 0,  0, 0], 
                               [ 0, 1,  0, 0], 
                               [ 0, 0,  0, 1]])
@@ -66,8 +66,8 @@ if __name__ == "__main__":
 
 
     #Hardcode config
-    start_config = [0, 0, 0]
-    goal_config = [2., 2., 2.]
+    start_config = [-1, -1, 0]
+    goal_config = [2., -1., 2.]
 
     planner = AStarPlanner(base_env, visualize=False)
     plan = planner.Plan(start_config, goal_config)
@@ -78,6 +78,13 @@ if __name__ == "__main__":
     traj = herb_base.ConvertPlanToTrajectory(plan)
 
     raw_input('Press any key to play trajectory')
+
+    transform = numpy.array([[1, 0, 0, start_config[0]],
+                        [0, 1, 0, start_config[1]],
+                        [0, 0, 1, 0],
+                        [0, 0, 0, 1]])
+    robot.SetTransform(transform)
+
     herb_base.ExecuteTrajectory(traj)
 
     raw_input('Press any key to quit.')

@@ -95,8 +95,6 @@ class GraspPlanner(object):
         print 'Executing base trajectory'
         self.base_planner.planning_env.herb.ExecuteTrajectory(base_traj)
 
-        # Now plan the arm to the grasp configuration
-        grasp_config = [4.3840316, 0.41922129, 0.16, 2.15893376, -3.1536364, -0.2443327, 0.01494979]
         start_config = np.array(self.arm_planner.planning_env.herb.GetCurrentConfiguration())
         arm_plan = self.arm_planner.Plan(start_config, grasp_config)
         arm_traj = self.arm_planner.planning_env.herb.ConvertPlanToTrajectory(arm_plan)

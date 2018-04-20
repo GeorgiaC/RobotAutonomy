@@ -72,6 +72,7 @@ if __name__ == "__main__":
 
     # Create environments for planning the arm and base
     resolution = [args.hres, args.hres, args.tres]
+    resolution = [0.3, 0.3, numpy.pi/4]
     herb = HerbRobot(env, robot, args.manip)
     arm_env = HerbEnvironment(herb)
     herb_base = SimpleRobot(env, robot)

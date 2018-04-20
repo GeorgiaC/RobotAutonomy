@@ -52,8 +52,10 @@ class GraspPlanner(object):
         manipulator = self.robot.SetActiveManipulator('left_wam')
 
         # attempting to get the base pose from inverse reachability 
-        poses, jointstate = sampler_func(69)
+        poses, jointstate = sampler_func(100)
         
+        print 'checking env: ', self.robot.GetEnv()
+
         for pose in poses:
             self.robot.SetTransform(pose)
             self.robot.SetDOFValues(*jointstate)
@@ -93,10 +95,12 @@ class GraspPlanner(object):
         base_traj = self.base_planner.planning_env.herb.ConvertPlanToTrajectory(base_plan)
 
         print 'Executing base trajectory'
+        self.base_planner.planning_env.herb.SetCurrentConfiguration(start_pose)
         self.base_planner.planning_env.herb.ExecuteTrajectory(base_traj)
 
         start_config = np.array(self.arm_planner.planning_env.herb.GetCurrentConfiguration())
         arm_plan = self.arm_planner.Plan(start_config, grasp_config)
+        print 'grasp config: ', grasp_config
         arm_traj = self.arm_planner.planning_env.herb.ConvertPlanToTrajectory(arm_plan)
 
         print 'Executing arm trajectory'
@@ -107,6 +111,7 @@ class GraspPlanner(object):
 
 
     def check_collision(self, x, y):
+        print 'collision!!!!!!!!!!'
         transform = np.array([[1, 0, 0, x],
                               [0, 1, 0, y],
                               [0, 0, 1, 0],
